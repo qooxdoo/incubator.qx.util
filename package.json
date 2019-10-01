@@ -1,0 +1,34 @@
+{
+  "name": "incubator.qx.util",
+  "version": "1.0.0",
+  "description": "Qooxdoo Util (Incubator)",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qooxdoo/incubator.qx.util.git"
+  },
+  "keywords": [
+    "qooxdoo",
+    "javascript",
+    "node"
+  ],
+  "author": "John Spackman (john.spackman@zenesis.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qooxdoo/incubator.qx.util/issues"
+  },
+  "homepage": "https://github.com/qooxdoo/incubator.qx.util#readme",
+  "dependencies": {
+    "ajv": "^6.10.2",
+    "better-ajv-errors": "^0.6.4",
+    "es6-promise-pool": "^2.5.0",
+    "mkpath": "^1.0.0",
+    "upath": "^1.1.2"
+  }
+}
