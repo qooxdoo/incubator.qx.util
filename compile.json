@@ -56,7 +56,12 @@
 	},
 	"applications": [
         {
-            "class": "qxl.cms.test.TestRunnerApp",
+            "class": "qx.test.util.TestRunnerBrowserApp",
+            "theme": "qx.theme.Simple",
+            "name": "browserTests"
+        },
+        {
+            "class": "qx.test.util.TestRunnerServerApp",
             "name": "serverTests",
             "exclude": [ "qx.ui.*" ],
             "type": "node"
