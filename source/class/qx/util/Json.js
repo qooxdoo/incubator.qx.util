@@ -22,8 +22,6 @@
  *
  * *********************************************************************** */
 
-const Ajv = require("ajv");
-const betterAjvErrors = require("better-ajv-errors");
 const fs = qx.util.Promisify.fs;
 
 qx.Class.define("qx.util.Json", {
@@ -56,6 +54,9 @@ qx.Class.define("qx.util.Json", {
      *    'warnOnly' parameter is true
      */
     validate(json, schema, warnOnly=false) {
+      const Ajv = require("ajv");
+      const betterAjvErrors = require("better-ajv-errors");
+      
       let ajv = new Ajv({
         allErrors: true,
         jsonPointers: true
