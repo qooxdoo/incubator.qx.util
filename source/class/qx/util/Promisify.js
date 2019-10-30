@@ -203,10 +203,21 @@ qx.Class.define("qx.util.Promisify", {
       });
     },
 
-    call: function(fn) {
+    call: function(fn, debugStack) {
+      if (qx.core.Environment.get("qx.debug") && debugStack) {
+        let ex = null;
+        try {
+          throw new Error("getStack");
+        }catch(tmp) {
+          ex = tmp;
+        }
+      }
       return new Promise((resolve, reject) => {
         fn((err, ...args) => {
           if (err) {
+            if (qx.core.Environment.get("qx.debug") && debugStack) {
+              console.log("Error: " + err + "\nCalled From: " + ex.stack);
+            }
             reject(err);
           } else {
             resolve(...args);
