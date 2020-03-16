@@ -15,20 +15,21 @@
      * John Spackman (https://github.com/johnspackman)
 
 ************************************************************************ */
+const fs = require("fs");
 
-/**
- * @require(qx.core.Init)
- * @ignore(process)
- * @ignore(require)
- */
-qx.Class.define("qx.test.util.TestRunnerServerApp", {
-  extend: qx.application.Basic,
-  
+qx.Class.define("qx.test.util.TestRequire", {
+  extend: qx.dev.unit.TestCase,
+
   members: {
-    async main() {
-      qx.log.appender.Node;
-      qx.dev.TestRunner.runAll(qx.test.util.TestRequire);
-      qx.dev.TestRunner.runAll(qx.test.jsx.TestJsx);
-    }
+    testLoadNpmModule() {
+      qx.util.Require.loadNpmModule("mkpath");
+      this.assert(fs.existsSync("node_modules/mkpath/mkpath.js"));
+    },
+
+    testRequire() {
+      let ajv = qx.util.Require.require("ajv");
+      this.assertFunction(ajv);
+    },
+    
   }
 });

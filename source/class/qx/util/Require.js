@@ -37,7 +37,7 @@ qx.Class.define("qx.util.Require", {
     require: function(module) {
       let exists = fs.existsSync(path.join(process.cwd(), "node_modules", module));
       if (!exists) {
-        this.constructor.loadNpmModule(module);
+        qx.util.Require.loadNpmModule(module);
       }      
       return require(module);
     },
