@@ -16,9 +16,6 @@
 
 ************************************************************************ */
 
-/**
- * @require(qx.html.Jsx)
- */
 qx.Class.define("qx.test.jsx.TestJsx", {
   extend: qx.dev.unit.TestCase,
 

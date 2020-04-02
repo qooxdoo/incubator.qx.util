@@ -28,11 +28,34 @@ qx.Class.define("qx.html.Jsx", {
   extend: qx.core.Object,
   
   statics: {
+    /**
+     * Creates an element.
+     * 
+     * Fragments are supported if the tagname is `qx.html.Jsx.FRAGMENT`; but in this case,
+     * an `qx.data.Array` is returned.
+     * 
+     * @param tagname {String} the name of the tag
+     * @param attributes {Map?} map of attribute values
+     * @param ...children {qx.html.Node[]} array of children
+     * @return {qx.html.Element | qx.data.Array}
+     */
     createElement(tagname, attributes, ...children) {
       if (typeof tagname === "function") { 
         throw new Error("Custom tags are not supported");
       }
-      let styles = null;
+      if (tagname == qx.html.Jsx.FRAGMENT) {
+        var arr = new qx.data.Array();
+        const addChildren = children => {
+          children.forEach(child => {
+            if (child instanceof qx.data.Array || qx.lang.Type.isArray(child))
+              addChildren(child);
+            else
+              arr.push(child);
+          });
+        }
+        addChildren(children);
+        return arr;
+      }
       let newAttrs = {};
       let eventHandlers = {};
       let innerHtml = null;
@@ -52,17 +75,7 @@ qx.Class.define("qx.html.Jsx", {
             return;
           }
           
-          if (prop == "style") {
-            let tmp = attributes.style;
-            styles = {};
-            tmp.split(/;/).forEach(seg => {
-              let pos = seg.indexOf(":");
-              let key = seg.substring(0, pos);
-              let value = seg.substring(pos + 1).trim();
-              styles[key] = value.trim();
-            });
-            
-          } else if (prop === "ref") {
+          if (prop === "ref") {
             if (attributes.ref instanceof qx.html.JsxRef || typeof attributes.ref === "function") {
               refs.push(attributes.ref);
             } else {
@@ -84,15 +97,22 @@ qx.Class.define("qx.html.Jsx", {
         });
       }
       
-      let element = new qx.html.Element(tagname, styles, newAttrs);
+      let element = qx.html.Factory.getInstance().createElement(tagname, newAttrs);
       if (children) {
-        children.forEach(child => {
-          if (typeof child == "string") {
-            element.add(new qx.html.Text(child));
-          } else {
-            element.add(child);
-          }
-        });
+        const addChildren = children => {
+          children.forEach(child => {
+            if (child instanceof qx.data.Array || qx.lang.Type.isArray(child)) {
+              addChildren(child);
+              
+            } else if (typeof child == "string") {
+              element.add(new qx.html.Text(child));
+              
+            } else {
+              element.add(child);
+            }
+          });
+        };
+        addChildren(children);
       }
       if (innerHtml) {
         element.setProperty("innerHtml", innerHtml);
@@ -111,7 +131,11 @@ qx.Class.define("qx.html.Jsx", {
       return element;
     },
     
-    SYNTETIC_EVENTS: null
+    /** @type {Map} map of event names, all values are `true` */
+    SYNTETIC_EVENTS: null,
+
+    /** @type {String} tagname for fragments */
+    FRAGMENT: "$$fragment"
   },
   
   defer(statics) {
