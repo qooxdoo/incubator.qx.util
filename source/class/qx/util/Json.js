@@ -54,8 +54,8 @@ qx.Class.define("qx.util.Json", {
      *    'warnOnly' parameter is true
      */
     validate(json, schema, warnOnly=false) {
-      const Ajv = require("ajv");
-      const betterAjvErrors = require("better-ajv-errors");
+      const Ajv = qx.util.Require.require("ajv");
+      const betterAjvErrors = qx.util.Require.require("better-ajv-errors");
       
       let ajv = new Ajv({
         allErrors: true,
