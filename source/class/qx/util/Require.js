@@ -26,6 +26,26 @@ const fs = require("fs");
 qx.Class.define("qx.util.Require", {
 
   statics: {
+    
+    /**
+     * Locates the `node_modules` directory for this application, which is
+     * expected to be in the current directory or in a parent (ancestor)
+     * directory
+     * 
+     * @return {String} the path to `node_modules`
+     */
+    getNodeModulesPath() {
+      let dir = process.cwd();
+      while (true) {
+        let test = path.join(dir, "node_modules");
+        if (fs.existsSync(test))
+          return test;
+        let newDir = path.resolve(dir, "..");
+        if (newDir == dir)
+          throw new Error("Cannot discover node_modules directory");
+        dir = newDir;
+      }
+    },
   
     /**
      * 
@@ -35,7 +55,7 @@ qx.Class.define("qx.util.Require", {
      * @param module {String} module to check
      */
     require: function(module) {
-      let exists = fs.existsSync(path.join(process.cwd(), "node_modules", module));
+      let exists = fs.existsSync(path.join(this.getNodeModulesPath(), module));
       if (!exists) {
         qx.util.Require.loadNpmModule(module);
       }      

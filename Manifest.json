@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/qooxdoo/qooxdoo-compiler/master/source/resource/qx/tool/schema/Manifest-1-0-0.json",
   "info": {
-    "name": "incubator.qx.util",
+    "name": "qooxdoo/incubator.qx.util",
     "summary": "Qooxdoo Tools for Server Development (Incubator)",
     "description": "Qooxdoo Tools for Server Development (Incubator)",
     "homepage": "https://qooxdoo.org",

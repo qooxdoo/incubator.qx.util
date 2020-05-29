@@ -69,6 +69,100 @@ qx.Class.define("qx.util.Path", {
           }
         }
       }
+    },
+
+    /**
+     * Normalises the path and corrects the case of the path to match what is actually on the filing system
+     *
+     * @param fsPath {String} the filename to normalise
+     * @returns {String} the new path
+     * @async
+     */
+    correctCase: function(dir) {
+      var drivePrefix = "";
+      if (process.platform === "win32" && dir.match(/^[a-zA-Z]:/)) {
+        drivePrefix = dir.substring(0, 2);
+        dir = dir.substring(2);
+      }
+      dir = dir.replace(/\\/g, "/");
+      var segs = dir.split("/");
+      if (!segs.length) {
+        return drivePrefix + dir;
+      }
+
+      var currentDir;
+      var index;
+      if (segs[0].length) {
+        currentDir = "";
+        index = 0;
+      } else {
+        currentDir = "/";
+        index = 1;
+      }
+
+      function bumpToNext(nextSeg) {
+        index++;
+        if (currentDir.length && currentDir !== "/") {
+          currentDir += "/";
+        }
+        currentDir += nextSeg;
+        return next();
+      }
+
+      function next() {
+        if (index == segs.length) {
+          if (process.platform === "win32") {
+            currentDir = currentDir.replace(/\//g, "\\");
+          }
+          return Promise.resolve(drivePrefix + currentDir);
+        }
+
+        let nextSeg = segs[index];
+        if (nextSeg == "." || nextSeg == "..") {
+          return bumpToNext(nextSeg);
+        }
+
+        return new Promise((resolve, reject) => {
+          fs.readdir(currentDir.length == 0 ? "." : drivePrefix + currentDir, { encoding: "utf8" }, (err, files) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+
+            let nextLowerCase = nextSeg.toLowerCase();
+            let exact = false;
+            let insensitive = null;
+            for (let i = 0; i < files.length; i++) {
+              if (files[i] === nextSeg) {
+                exact = true;
+                break;
+              }
+              if (files[i].toLowerCase() === nextLowerCase) {
+                insensitive = files[i];
+              }
+            }
+            if (!exact && insensitive) {
+              nextSeg = insensitive;
+            }
+
+            bumpToNext(nextSeg).then(resolve);
+          });
+        });
+      }
+
+      return new Promise((resolve, reject) => {
+        fs.stat(drivePrefix + dir, err => {
+          if (err) {
+            if (err.code == "ENOENT") {
+              resolve(drivePrefix + dir);
+            } else {
+              reject(err);
+            }
+          } else {
+            next().then(resolve);
+          }
+        });
+      });
     }
     
   }
